@@ -7,37 +7,31 @@ ex_yes_fate_df = pd.read_csv("storage\\ex_yes_fate_chart.csv",index_col="certain
 ex_no_fate_df = pd.read_csv("storage\\ex_no_fate_chart.csv",index_col="certainty",header=0)
 
 """
-BASE RULES:
-    given a chaos_factor, roll a D100. Depending on the roll and chaos factor find the certainty cat.
-    Certainty cat is determined by the bounds given-
-
-    If the roll is a double AND is less than the chaos factor, return a random event.
-
-    Scenerio:
-    Question: Does the tavern keeper recognize me?
-    Set Likelihood: 50/50
-    Chaos factor: 5
-    Send function: [false, 5, either]
-
-    function:
-    rolls a 65
-    base rules say 50 for threshold meaning: <=50 = yes, >50 = no
-    65 yields "no"
+PARAMS:
+    use_ex: True/False; use exceptional yes/no rules
+    chaos_factor: 1-9; 
+    certainty: player chosen label of level of certainty from impossible to certain
+    roll: 1D100 roll
+    show_thresh: True/False; show thresholds for fate chart (default False)
 """
-def return_likelihood(use_ex, chaos_factor, certainty, roll, show_thresh=False):
+def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
 
     #VALIDATION STEP:
+
     valid_factors = ['0','1','2','3','4','5','6','7','8','9']
     chaos_factor = str(chaos_factor)
 
     valid_certainties = base_fate_df.index.tolist()
     certainty = certainty.lower().strip()
 
+    if(roll > 100 or roll < 1):
+        return "\nDie roll must fall between 1 and 100"
+
     if(chaos_factor not in valid_factors):
-        return "Not a valid chaos factor"
+        return "\nNot a valid chaos factor"
 
     if(certainty not in valid_certainties):
-        return f"""{certainty} is not a valid certainty level please use one of these: \n 
+        return f"""\n{certainty} is not a valid certainty level please use one of these: \n 
         {", ".join(valid_certainties)}
         """
     
@@ -91,5 +85,5 @@ roll = rand.randint(1,100)
 chaos_factor = 5
 certainty = "either"
 print(f"1D100 ROLL: {roll}")
-print(return_likelihood(False, chaos_factor, certainty, roll))
-print(return_likelihood(True, chaos_factor, certainty, roll, True))
+print(ask_fate_chart(False, chaos_factor, certainty, roll))
+print(ask_fate_chart(True, chaos_factor, certainty, roll, True))

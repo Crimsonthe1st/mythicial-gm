@@ -1,10 +1,13 @@
 import pandas as pd
-import dice_roll as dr
+from pathlib import Path
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+STORAGE_DIR = ROOT_DIR / "mechanics" / "storage"
 
 #SRCs
-base_fate_df = pd.read_csv("storage\\base_fate_chart.csv",index_col="certainty",header=0)
-ex_yes_fate_df = pd.read_csv("storage\\ex_yes_fate_chart.csv",index_col="certainty",header=0)
-ex_no_fate_df = pd.read_csv("storage\\ex_no_fate_chart.csv",index_col="certainty",header=0)
+base_fate_df = pd.read_csv(STORAGE_DIR/"base_fate_chart.csv",index_col="certainty",header=0)
+ex_yes_fate_df = pd.read_csv(STORAGE_DIR/"ex_yes_fate_chart.csv",index_col="certainty",header=0)
+ex_no_fate_df = pd.read_csv(STORAGE_DIR/"ex_no_fate_chart.csv",index_col="certainty",header=0)
 
 """
 PARAMS:
@@ -81,10 +84,5 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
         else:
             return "ANSWER: no"
 
-d100 = dr.Dice(100)
-roll = d100.roll()
-chaos_factor = 5
-certainty = "either"
-print(f"1D100 ROLL: {roll}")
-print(ask_fate_chart(False, chaos_factor, certainty, roll))
-print(ask_fate_chart(True, chaos_factor, certainty, 91, True))
+def ask_fate_die(chaos_factor, certainty, roll, show_thresh=False): 
+     return

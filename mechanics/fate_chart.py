@@ -1,7 +1,6 @@
 import pandas as pd
 import dice_roll as dr
 
-
 #SRCs
 base_fate_df = pd.read_csv("storage\\base_fate_chart.csv",index_col="certainty",header=0)
 ex_yes_fate_df = pd.read_csv("storage\\ex_yes_fate_chart.csv",index_col="certainty",header=0)

@@ -1,5 +1,6 @@
 import pandas as pd
-import random as rand
+import dice_roll as dr
+
 
 #SRCs
 base_fate_df = pd.read_csv("storage\\base_fate_chart.csv",index_col="certainty",header=0)
@@ -40,10 +41,10 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
     if(rand_check == 0 and ( roll%11 <= int(chaos_factor))): 
         print(f"RANDOM EVENT TRIGGERED: ROLL {roll}")
 
+    base_threshold = base_fate_df.loc[certainty,chaos_factor]
 
     if(use_ex):
-        print("Using exceptional yes/no rules\n")
-        base_threshold = base_fate_df.loc[certainty,chaos_factor]
+        print("Using exceptional yes/no rules")
         ex_yes_thresh = ex_yes_fate_df.loc[certainty,chaos_factor]
         ex_no_thresh = ex_no_fate_df.loc[certainty,chaos_factor]
 
@@ -60,11 +61,12 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
         if(roll <= base_threshold):
             return "ANSWER: yes"
 
+        if(roll >= ex_no_thresh):
+                    return "ANSWER: exceptional no"
+        
         if(roll > base_threshold):
             return "ANSWER: no"
 
-        if(roll >= ex_no_thresh):
-            return "ANSWER: exceptional no"
     
     else:
         print("Using base rules \n")
@@ -80,10 +82,10 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
         else:
             return "ANSWER: no"
 
-# print(base_fate_df)
-roll = rand.randint(1,100)
+d100 = dr.Dice(100)
+roll = d100.roll()
 chaos_factor = 5
 certainty = "either"
 print(f"1D100 ROLL: {roll}")
 print(ask_fate_chart(False, chaos_factor, certainty, roll))
-print(ask_fate_chart(True, chaos_factor, certainty, roll, True))
+print(ask_fate_chart(True, chaos_factor, certainty, 91, True))

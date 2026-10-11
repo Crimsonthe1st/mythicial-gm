@@ -1,0 +1,10 @@
+"certainty","modifier"
+"certain",5
+"nearly_certain",4
+"very_likely",2
+"likely",1
+"either",0
+"unlikely",-1
+"very_unlikely",-2
+"nearly_impossible",-4
+"impossible",-5

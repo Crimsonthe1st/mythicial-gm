@@ -1,6 +1,5 @@
 import cmd
 import re
-import shlex
 import sys
 from pathlib import Path
 
@@ -12,7 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from mechanics import dice_roll as dr
 from mechanics import certainty as cert
-from mechanics import fate_chart as fate
+from mechanics import magic_eight_ball as fate
 
 class Shell(cmd.Cmd):
     prompt = "mythic-gm > "

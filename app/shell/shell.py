@@ -62,7 +62,6 @@ class Shell(cmd.Cmd):
 
 
     """ACTIONS:"""
-
     def do_exit(self, arg):
         print("Exiting mythical GM...")
         return True
@@ -93,11 +92,30 @@ class Shell(cmd.Cmd):
                     dice = dr.Dice(int(dice_type))
                     print(f"{num_dice}D{dice.sides} ROLL: {dice.rolls(int(num_dice))}")
 
-    
-    # def do_set_certainty(self, argline):
+    def do_set_certainty(self, arg):
+        valid_fmt = re.compile(r'(?i)^(?:(?P<word>[A-Z_]+)|(?P<num>[1-9]))$')
+        check_fmt = re.match(valid_fmt, arg)
+        if not check_fmt:
+            self.do_help('set_certainty')
+        else:
+            match = valid_fmt.search(arg)
+            if match:
+                if match.group('word'):
+                    lookup = cert.Certainty[match.group('word').upper()]
+                    if lookup.value:
+                        print(f"Set certainty to: {match.group('word').upper()}")
+                    else:
+                        self.do_help('set_certainty')
+                    
+                elif match.group('num'):
+                    lookup = cert.Certainty(int(match.group('num')))
+                    if lookup.name: 
+                        print(f"Set certainty to: {lookup.name}")
+                    else:
+                        self.do_help('set_certainty')
+            else:
+                self.do_help('set_certainty')
 
-
-    #     print(f"CERTAINTY SET: {certainty}")
         
 if __name__ == "__main__":
     Shell().cmdloop()

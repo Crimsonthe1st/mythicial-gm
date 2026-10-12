@@ -1,5 +1,7 @@
 import pandas as pd
 from pathlib import Path
+import certainty as cert
+
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 STORAGE_DIR = ROOT_DIR / "mechanics" / "storage"
@@ -8,6 +10,12 @@ STORAGE_DIR = ROOT_DIR / "mechanics" / "storage"
 base_fate_df = pd.read_csv(STORAGE_DIR/"base_fate_chart.csv",index_col="certainty",header=0)
 ex_yes_fate_df = pd.read_csv(STORAGE_DIR/"ex_yes_fate_chart.csv",index_col="certainty",header=0)
 ex_no_fate_df = pd.read_csv(STORAGE_DIR/"ex_no_fate_chart.csv",index_col="certainty",header=0)
+
+fate_roll_ans_df = pd.read_csv(STORAGE_DIR/"fate_chk_answers.csv",index_col="answer")
+fate_roll_factor_df = pd.read_csv(STORAGE_DIR/"fate_chk_factor.csv",header=0)
+base_fate_certainty_df = pd.read_csv(STORAGE_DIR/"fate_chk_certainty.csv",header=0)
+
+print(base_fate_certainty_df)
 
 """
 PARAMS:
@@ -24,7 +32,8 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
     valid_factors = ['0','1','2','3','4','5','6','7','8','9']
     chaos_factor = str(chaos_factor)
 
-    valid_certainties = base_fate_df.index.tolist()
+    valid_certainties = [str(member.name).lower() for member in cert.Certainty]
+    
     certainty = certainty.lower().strip()
 
     if(roll > 100 or roll < 1):
@@ -84,5 +93,11 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
         else:
             return "ANSWER: no"
 
-def ask_fate_die(chaos_factor, certainty, roll, show_thresh=False): 
-     return
+# def ask_fate_die(chaos_factor, certainty, roll, show_thresh=False): 
+#     valid_factors = ['0','1','2','3','4','5','6','7','8','9']
+#     chaos_factor = str(chaos_factor)
+
+
+#      return
+
+ask_fate_chart(True,4,'certain',50)

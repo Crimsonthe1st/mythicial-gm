@@ -6,7 +6,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from mechanics import dice_roll as dr
 from mechanics import certainty as cert
-from mechanics import fate_chart as fate
+from mechanics import magic_eight_ball as fate
 
 d100 = dr.Dice(100)
 print(f"5 rolls of d100: {d100.rolls(5)}")

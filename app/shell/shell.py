@@ -115,6 +115,13 @@ class Shell(cmd.Cmd):
             else:
                 self.do_help('set_certainty')
 
-        
+    def do_fate_roll(self, arg):
+        certainty = 'either'
+        chaos_factor = 5
+        dice = dr.Dice(int(10))
+        base_roll = dice.roll() + dice.roll()
+        res = fate.ask_fate_die(chaos_factor, certainty, base_roll)
+        print(res)
+
 if __name__ == "__main__":
     Shell().cmdloop()

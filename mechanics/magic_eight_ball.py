@@ -3,18 +3,31 @@ import pandas as pd
 from pathlib import Path
 from mechanics import certainty as cert
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+MECHANICS_DIR = Path(__file__).resolve().parent
 
-STORAGE_DIR = ROOT_DIR / "mechanics" / "storage"
+base_fate_csv = MECHANICS_DIR / "storage" / "base_fate_chart.csv"
+ex_yes_csv = MECHANICS_DIR / "storage" / "ex_yes_fate_chart.csv"
+ex_no_csv = MECHANICS_DIR / "storage" / "ex_no_fate_chart.csv"
 
-#SRCs
-base_fate_df = pd.read_csv(STORAGE_DIR/"base_fate_chart.csv",index_col="certainty",header=0)
-ex_yes_fate_df = pd.read_csv(STORAGE_DIR/"ex_yes_fate_chart.csv",index_col="certainty",header=0)
-ex_no_fate_df = pd.read_csv(STORAGE_DIR/"ex_no_fate_chart.csv",index_col="certainty",header=0)
+actions_csv = MECHANICS_DIR / "storage" / "meaning_actions.csv" 
+desc_csv = MECHANICS_DIR / "storage" / "meaning_desc.csv" 
+rand_csv = MECHANICS_DIR / "storage" / "rand_events.csv"
 
-fate_roll_ans_df = pd.read_csv(STORAGE_DIR/"fate_chk_answers.csv",index_col="answer")
-fate_roll_factor_df = pd.read_csv(STORAGE_DIR/"fate_chk_factor.csv",index_col="chaos_factor")
-fate_roll_certainty_df = pd.read_csv(STORAGE_DIR/"fate_chk_certainty.csv",index_col="certainty")
+fate_roll_ans_csv = MECHANICS_DIR / "storage" / "fate_chk_answers.csv" 
+fate_roll_factor_csv = MECHANICS_DIR / "storage" / "fate_chk_factor.csv" 
+fate_roll_certainty_csv = MECHANICS_DIR / "storage" / "fate_chk_certainty.csv" 
+
+base_fate_df = pd.read_csv(base_fate_csv, index_col="certainty", header=0)
+ex_yes_fate_df = pd.read_csv(ex_yes_csv, index_col="certainty", header=0)
+ex_no_fate_df = pd.read_csv(ex_no_csv, index_col="certainty", header=0)
+
+actions_df = pd.read_csv(actions_csv)
+desc_df = pd.read_csv(desc_csv)
+rand_df = pd.read_csv(rand_csv)
+
+fate_roll_ans_df = pd.read_csv(fate_roll_ans_csv,index_col="answer")
+fate_roll_factor_df = pd.read_csv(fate_roll_factor_csv,index_col="chaos_factor")
+fate_roll_certainty_df = pd.read_csv(fate_roll_certainty_csv,index_col="certainty")
 
 """
 PARAMS:
@@ -49,6 +62,7 @@ def ask_fate_chart(chaos_factor, certainty, roll, show_thresh=False, use_ex=True
     rand_check = roll % 11
     if(rand_check == 0 and ( roll%11 <= int(chaos_factor))): 
         print(f"RANDOM EVENT TRIGGERED: ROLL {roll}")
+        get_rand_event(roll)
 
     base_threshold = base_fate_df.loc[certainty,chaos_factor]
 
@@ -126,3 +140,29 @@ def ask_fate_die(chaos_factor, certainty, roll, show_thresh=False):
 
     else:
         return "ANSWER: No"  
+
+def get_actions(roll1, roll2):
+    if (roll1 < 1 or roll1 > 100) or ( (roll2 < 1 or roll2 > 100)):
+        return "Roll must be between 1 and 100"
+
+    res1 = actions_df.iloc[roll1,0]
+    res2 = actions_df.iloc[roll2,1]
+    return res1, res2
+
+def get_descs(roll1, roll2):
+    if (roll1 < 1 or roll1 > 100) or ( (roll2 < 1 or roll2 > 100)):
+        return "Roll must be between 1 and 100"
+
+    res1 = desc_df.iloc[roll1,0]
+    res2 = desc_df.iloc[roll2,1]
+    return res1, res2
+
+def get_rand_event(roll):
+    if (roll < 1 or roll > 100):
+        return "Roll must be between 1 and 100"
+    matched_row = rand_df[
+        (rand_df["range_start"] <= roll) & (roll <= rand_df["range_end"])
+    ]
+    res = matched_row["result"].values[0]
+
+    return res

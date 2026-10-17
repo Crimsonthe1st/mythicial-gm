@@ -1,17 +1,11 @@
 import cmd
 import re
-import sys
 from pathlib import Path
 
-CURRENT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = CURRENT_DIR.parent.parent
 CERTAINTY = 5
 CHAOS_FACTOR = 5
 VERBOSE = True
 USE_EX = True
-
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
 
 from mechanics import dice_roll as dr
 from mechanics import certainty as cert
@@ -215,5 +209,20 @@ class Shell(cmd.Cmd):
                 CHAOS FACTOR: {CHAOS_FACTOR}
                 """)
 
+    def do_get_actions(self, arg):
+            dice = dr.Dice(int(100))
+            res = dice.rolls(2)
+            print("ACTIONS: ",fate.get_actions(res[0], res[1]))
+
+    def do_get_descs(self, arg):
+            dice = dr.Dice(int(100))
+            res = dice.rolls(2)
+            print("DESCRIPTIONS: ",fate.get_descs(res[0], res[1]))
+
+    def do_get_event(self, arg):
+            dice = dr.Dice(int(100))
+            res = dice.roll()
+            print("EVENT: ",fate.get_rand_event(res))
+            
 if __name__ == "__main__":
     Shell().cmdloop()

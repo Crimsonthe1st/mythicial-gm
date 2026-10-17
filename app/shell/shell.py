@@ -5,6 +5,8 @@ from pathlib import Path
 
 CURRENT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CURRENT_DIR.parent.parent
+CERTAINTY = 5
+CHAOS_FACTOR = 5
 
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -51,6 +53,24 @@ class Shell(cmd.Cmd):
                         IMPOSSIBLE = 9
                 """)
 
+    def help_fate_roll(self):
+        print("""
+                CMD (fate_roll [certainty type] [digit_x]): Returns answer.\n
+                RESTRICTIONS
+                -X must be greater than 0 and less than 10
+                -certainty type must be a valid option
+                
+                VALID OPTIONS: 
+                    CERTAIN = 1
+                    NEARLY_CERTAIN = 2
+                    VERY_LIKELY = 3
+                    LIKELY = 4
+                    EITHER = 5
+                    UNLIKELY = 6
+                    VERY_UNLIKELY = 7
+                    NEARLY_IMPOSSIBLE = 8
+                    IMPOSSIBLE = 9
+            """)
     """Repeats the last command given"""
     def emptyline(self):
         print(f"REPEAT: {self.lastcmd}")
@@ -91,6 +111,18 @@ class Shell(cmd.Cmd):
                     dice = dr.Dice(int(dice_type))
                     print(f"{num_dice}D{dice.sides} ROLL: {dice.rolls(int(num_dice))}")
 
+    def do_set_chaos(self, arg):
+        valid_fmt = re.compile(r'^[1-9]$')
+        check_fmt = re.match(valid_fmt, arg)
+        if not check_fmt:
+                    self.do_help('set_certainty')
+        else:
+            print(f"Set chaos factor to: {arg}")
+            try:
+                globals()["CHAOS_FACTOR"] = int(arg)
+            except Exception as e:
+                print(e)
+            
     def do_set_certainty(self, arg):
         valid_fmt = re.compile(r'(?i)^(?:(?P<word>[A-Z_]+)|(?P<num>[1-9]))$')
         check_fmt = re.match(valid_fmt, arg)
@@ -103,6 +135,7 @@ class Shell(cmd.Cmd):
                     lookup = cert.Certainty[match.group('word').upper()]
                     if lookup.value:
                         print(f"Set certainty to: {match.group('word').upper()}")
+                        globals()["CERTAINTY"] = int(lookup.value)
                     else:
                         self.do_help('set_certainty')
                     
@@ -110,14 +143,36 @@ class Shell(cmd.Cmd):
                     lookup = cert.Certainty(int(match.group('num')))
                     if lookup.name: 
                         print(f"Set certainty to: {lookup.name}")
+                        globals()["CERTAINTY"] = int(lookup.value)
                     else:
                         self.do_help('set_certainty')
             else:
                 self.do_help('set_certainty')
 
     def do_fate_roll(self, arg):
-        certainty = 'either'
-        chaos_factor = 5
+
+        if arg:
+            valid_fmt = re.compile(r'(?i)^(?:(?P<word>[A-Z_]+)|(?P<num>[1-9]))$')
+
+            valid_fmt = re.compile(r'(?i)^(?:(?P<cert>\w*) (?P<fact>\d*))$')
+            check_fmt = re.match(valid_fmt,arg)
+            if(not check_fmt):
+                self.do_help('fate_roll')
+
+            match = valid_fmt.search(arg)
+            if match:
+                if match.group('cert') and match.group('fact'):
+                    certainty = self.do_set_certainty(match.group('cert'))
+                    chaos_factor = self.do_set_chaos(match.group('fact'))
+
+
+        else:
+            certainty = 'very_unlikely'
+            chaos_factor = 1
+            print(f'Using preset certainty and chaos_factor ({certainty},{chaos_factor})')
+            certainty = 'either'
+            chaos_factor = 5
+
         dice = dr.Dice(int(10))
         base_roll = dice.roll() + dice.roll()
         res = fate.ask_fate_die(chaos_factor, certainty, base_roll)

@@ -7,6 +7,8 @@ CURRENT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CURRENT_DIR.parent.parent
 CERTAINTY = 5
 CHAOS_FACTOR = 5
+VERBOSE = True
+USE_EX = True
 
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -53,6 +55,11 @@ class Shell(cmd.Cmd):
                         IMPOSSIBLE = 9
                 """)
 
+    def help_set_chaos(self):
+        print("""
+                CMD (set_chaos [digit]): 1-9
+                """)
+
     def help_fate_roll(self):
         print("""
                 CMD (fate_roll [certainty type] [digit_x]): Returns answer.\n
@@ -78,7 +85,6 @@ class Shell(cmd.Cmd):
 
     def default(self, line):
         print(f"Unknown command: {line!r}. Type 'help' for a list of commands.")
-
 
     """ACTIONS:"""
     def do_exit(self, arg):
@@ -165,18 +171,49 @@ class Shell(cmd.Cmd):
                     certainty = self.do_set_certainty(match.group('cert'))
                     chaos_factor = self.do_set_chaos(match.group('fact'))
 
-
         else:
-            certainty = 'very_unlikely'
-            chaos_factor = 1
+            certainty = cert.Certainty(CERTAINTY).name
+            chaos_factor = CHAOS_FACTOR
             print(f'Using preset certainty and chaos_factor ({certainty},{chaos_factor})')
-            certainty = 'either'
-            chaos_factor = 5
 
         dice = dr.Dice(int(10))
         base_roll = dice.roll() + dice.roll()
-        res = fate.ask_fate_die(chaos_factor, certainty, base_roll)
+        res = fate.ask_fate_die(chaos_factor, certainty, base_roll, VERBOSE)
         print(res)
+
+    def do_fate_chart(self, arg):
+
+        if arg:
+            valid_fmt = re.compile(r'(?i)^(?:(?P<word>[A-Z_]+)|(?P<num>[1-9]))$')
+
+            valid_fmt = re.compile(r'(?i)^(?:(?P<cert>\w*) (?P<fact>\d*))$')
+            check_fmt = re.match(valid_fmt,arg)
+            if(not check_fmt):
+                self.do_help('fate_check')
+
+            match = valid_fmt.search(arg)
+            if match:
+                if match.group('cert') and match.group('fact'):
+                    certainty = self.do_set_certainty(match.group('cert'))
+                    chaos_factor = self.do_set_chaos(match.group('fact'))
+
+        else:
+            certainty = cert.Certainty(CERTAINTY).name
+            chaos_factor = CHAOS_FACTOR
+            print(f'Using preset certainty and chaos_factor ({certainty},{chaos_factor})')
+
+        dice = dr.Dice(int(100))
+        base_roll = dice.roll()
+        res = fate.ask_fate_chart(chaos_factor, certainty, base_roll, VERBOSE, USE_EX)
+        print(f"ROLL: {base_roll} and {res}")
+
+    def do_echo_vars(self, arg):
+        lookup = cert.Certainty(CERTAINTY).name
+        print(f"""
+                CURRENT SETTINGS:\n
+                CERTAINTY: {lookup}
+                CHAOS FACTOR: {CHAOS_FACTOR}
+                """)
 
 if __name__ == "__main__":
     Shell().cmdloop()

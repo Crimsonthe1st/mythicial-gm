@@ -24,7 +24,7 @@ PARAMS:
     roll: 1D100 roll
     show_thresh: True/False; show thresholds for fate chart (default False)
 """
-def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
+def ask_fate_chart(chaos_factor, certainty, roll, show_thresh=False, use_ex=True):
 
     #VALIDATION STEP:
 
@@ -63,17 +63,17 @@ def ask_fate_chart(use_ex, chaos_factor, certainty, roll, show_thresh=False):
                       YES: roll {base_threshold} or lower\n
                       NO: roll higher than {base_threshold}\n
                       EX NO: roll {ex_no_thresh} or higher\n""")
-
-        if(roll < ex_yes_thresh):
+#6
+        if(roll >= ex_no_thresh):
+            return "ANSWER: exceptional no"
+        
+        elif(roll < ex_yes_thresh):
             return "ANSWER: exceptional yes"
 
-        if(roll <= base_threshold):
+        elif(roll <= base_threshold):
             return "ANSWER: yes"
-
-        if(roll >= ex_no_thresh):
-                    return "ANSWER: exceptional no"
         
-        if(roll > base_threshold):
+        else:#(roll > base_threshold):
             return "ANSWER: no"
 
     
@@ -111,7 +111,7 @@ def ask_fate_die(chaos_factor, certainty, roll, show_thresh=False):
     fact_mod = fate_roll_factor_df.loc[chaos_factor,"modifier"]
 
     if show_thresh:
-        print(f"Certainty MOD: {cert_mod}, Factor MOD: {fact_mod}")
+        print(f"Certainty MOD: {cert_mod}, Factor MOD: {fact_mod}, RES: {roll + cert_mod + fact_mod}")
     
     res = roll + cert_mod + fact_mod
     

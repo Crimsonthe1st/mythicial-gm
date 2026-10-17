@@ -12,10 +12,14 @@ ex_no_csv = MECHANICS_DIR / "storage" / "ex_no_fate_chart.csv"
 actions_csv = MECHANICS_DIR / "storage" / "meaning_actions.csv" 
 desc_csv = MECHANICS_DIR / "storage" / "meaning_desc.csv" 
 rand_csv = MECHANICS_DIR / "storage" / "rand_events.csv"
+loc_csv = MECHANICS_DIR / "storage" / "locations.csv"
+char_csv = MECHANICS_DIR / "storage" / "characters.csv"
+obj_csv = MECHANICS_DIR / "storage" / "objects.csv"
 
 fate_roll_ans_csv = MECHANICS_DIR / "storage" / "fate_chk_answers.csv" 
 fate_roll_factor_csv = MECHANICS_DIR / "storage" / "fate_chk_factor.csv" 
 fate_roll_certainty_csv = MECHANICS_DIR / "storage" / "fate_chk_certainty.csv" 
+
 
 base_fate_df = pd.read_csv(base_fate_csv, index_col="certainty", header=0)
 ex_yes_fate_df = pd.read_csv(ex_yes_csv, index_col="certainty", header=0)
@@ -24,6 +28,9 @@ ex_no_fate_df = pd.read_csv(ex_no_csv, index_col="certainty", header=0)
 actions_df = pd.read_csv(actions_csv)
 desc_df = pd.read_csv(desc_csv)
 rand_df = pd.read_csv(rand_csv)
+obj_df = pd.read_csv(obj_csv)
+loc_df = pd.read_csv(loc_csv)
+char_df = pd.read_csv(char_csv)
 
 fate_roll_ans_df = pd.read_csv(fate_roll_ans_csv,index_col="answer")
 fate_roll_factor_df = pd.read_csv(fate_roll_factor_csv,index_col="chaos_factor")
@@ -157,6 +164,30 @@ def get_descs(roll1, roll2):
     res2 = desc_df.iloc[roll2,1]
     return res1, res2
 
+def get_objects(roll1, roll2):
+    if (roll1 < 1 or roll1 > 100) or ( (roll2 < 1 or roll2 > 100)):
+        return "Roll must be between 1 and 100"
+
+    res1 = obj_df.iloc[roll1,0]
+    res2 = obj_df.iloc[roll2,1]
+    return res1, res2
+
+def get_locations(roll1, roll2):
+    if (roll1 < 1 or roll1 > 100) or ( (roll2 < 1 or roll2 > 100)):
+        return "Roll must be between 1 and 100"
+
+    res1 = loc_df.iloc[roll1,0]
+    res2 = loc_df.iloc[roll2,1]
+    return res1, res2
+
+def get_characters(roll1, roll2):
+    if (roll1 < 1 or roll1 > 100) or ( (roll2 < 1 or roll2 > 100)):
+        return "Roll must be between 1 and 100"
+
+    res1 = char_df.iloc[roll1,0]
+    res2 = char_df.iloc[roll2,1]
+    return res1, res2
+
 def get_rand_event(roll):
     if (roll < 1 or roll > 100):
         return "Roll must be between 1 and 100"
@@ -166,3 +197,4 @@ def get_rand_event(roll):
     res = matched_row["result"].values[0]
 
     return res
+

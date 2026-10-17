@@ -219,10 +219,26 @@ class Shell(cmd.Cmd):
             res = dice.rolls(2)
             print("DESCRIPTIONS: ",fate.get_descs(res[0], res[1]))
 
+    def do_get_objects(self, arg):
+            dice = dr.Dice(int(100))
+            res = dice.rolls(2)
+            print("DESCRIPTIONS: ",fate.get_objects(res[0], res[1]))
+
+    def do_get_characters(self, arg):
+            dice = dr.Dice(int(100))
+            res = dice.rolls(2)
+            print("DESCRIPTIONS: ",fate.get_characters(res[0], res[1]))
+
+
+    def do_get_locations(self, arg):
+            dice = dr.Dice(int(100))
+            res = dice.rolls(2)
+            print("DESCRIPTIONS: ",fate.get_locations(res[0], res[1]))
+
     def do_get_event(self, arg):
             dice = dr.Dice(int(100))
             res = dice.roll()
             print("EVENT: ",fate.get_rand_event(res))
-            
+
 if __name__ == "__main__":
     Shell().cmdloop()
